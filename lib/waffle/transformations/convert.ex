@@ -20,7 +20,7 @@ defmodule Waffle.Transformations.Convert do
 
     case result do
       {_, 0} ->
-        {:ok, %Waffle.File{file | path: new_path, is_tempfile?: true}}
+        {:ok, %{file | path: new_path, is_tempfile?: true}}
 
       {error_message, _exit_code} ->
         {:error, error_message}
