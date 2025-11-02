@@ -3,7 +3,7 @@ defmodule WaffleTest.Processor do
   @img "test/support/image.png"
   @img2 "test/support/image two.png"
 
-  defmodule DummyDefinition do
+  defmodule DummyStorage do
     use Waffle.Actions.Store
     use Waffle.Definition.Storage
 
@@ -70,9 +70,9 @@ defmodule WaffleTest.Processor do
   test "returns the original path for :noaction transformations" do
     {:ok, file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :original,
-        {Combo.Storage.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyStorage), nil}
       )
 
     assert file.path == @img
@@ -81,18 +81,18 @@ defmodule WaffleTest.Processor do
   test "returns nil for :skip transformations" do
     assert {:ok, nil} =
              Waffle.Processor.process(
-               DummyDefinition,
+               DummyStorage,
                :skipped,
-               {Combo.Storage.File.new(@img, DummyDefinition), nil}
+               {Combo.Storage.File.new(@img, DummyStorage), nil}
              )
   end
 
   test "transforms a copied version of file according to the specified transformation" do
     {:ok, new_file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :thumb,
-        {Combo.Storage.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyStorage), nil}
       )
 
     assert new_file.path != @img
@@ -105,9 +105,9 @@ defmodule WaffleTest.Processor do
   test "transforms a copied version of file according to a function transformation that returns a string" do
     {:ok, new_file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :med,
-        {Combo.Storage.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyStorage), nil}
       )
 
     assert new_file.path != @img
@@ -122,9 +122,9 @@ defmodule WaffleTest.Processor do
   test "transforms a copied version of file according to a function transformation that returns a list" do
     {:ok, new_file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :small,
-        {Combo.Storage.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyStorage), nil}
       )
 
     assert new_file.path != @img
@@ -137,9 +137,9 @@ defmodule WaffleTest.Processor do
   test "transforms with a custom function" do
     {:ok, new_file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :custom,
-        {Combo.Storage.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyStorage), nil}
       )
 
     assert new_file.path != @img
@@ -152,9 +152,9 @@ defmodule WaffleTest.Processor do
   test "transforms with custom functions" do
     {:ok, new_file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :custom_with_ext,
-        {Combo.Storage.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyStorage), nil}
       )
 
     assert new_file.path != @img
@@ -170,9 +170,9 @@ defmodule WaffleTest.Processor do
 
     {:ok, new_file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :small,
-        {Combo.Storage.File.new(%{binary: img_binary, filename: "image.png"}, DummyDefinition), nil}
+        {Combo.Storage.File.new(%{binary: img_binary, filename: "image.png"}, DummyStorage), nil}
       )
 
     assert new_file.path != @img
@@ -187,9 +187,9 @@ defmodule WaffleTest.Processor do
   test "file names with spaces" do
     {:ok, new_file} =
       Waffle.Processor.process(
-        DummyDefinition,
+        DummyStorage,
         :thumb,
-        {Combo.Storage.File.new(@img2, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img2, DummyStorage), nil}
       )
 
     assert new_file.path != @img2

@@ -30,7 +30,7 @@ defmodule WaffleTest.Storage.Local do
     end
   end
 
-  defmodule DummyDefinition do
+  defmodule DummyStorage do
     use Combo.Storage
 
     @versions [:original, :thumb, :skipped]
@@ -55,59 +55,59 @@ defmodule WaffleTest.Storage.Local do
   test "put, delete, get" do
     assert {:ok, "original-image.png"} ==
              Local.put(
-               DummyDefinition,
+               DummyStorage,
                :original,
                {Combo.Storage.File.new(
                   %{filename: "original-image.png", path: @img},
-                  DummyDefinition
+                  DummyStorage
                 ), nil}
              )
 
     assert {:ok, "1/thumb-image.png"} ==
              Local.put(
-               DummyDefinition,
+               DummyStorage,
                :thumb,
                {Combo.Storage.File.new(
                   %{filename: "1/thumb-image.png", path: @img},
-                  DummyDefinition
+                  DummyStorage
                 ), nil}
              )
 
     assert File.exists?("waffletest/uploads/original-image.png")
     assert File.exists?("waffletest/uploads/1/thumb-image.png")
-    assert "/waffletest/uploads/original-image.png" == DummyDefinition.url("image.png", :original)
-    assert "/waffletest/uploads/1/thumb-image.png" == DummyDefinition.url("1/image.png", :thumb)
+    assert "/waffletest/uploads/original-image.png" == DummyStorage.url("image.png", :original)
+    assert "/waffletest/uploads/1/thumb-image.png" == DummyStorage.url("1/image.png", :thumb)
 
-    :ok = Local.delete(DummyDefinition, :original, {%{file_name: "image.png"}, nil})
-    :ok = Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
+    :ok = Local.delete(DummyStorage, :original, {%{file_name: "image.png"}, nil})
+    :ok = Local.delete(DummyStorage, :thumb, {%{file_name: "image.png"}, nil})
     refute File.exists?("waffletest/uploads/original-image.png")
     refute File.exists?("waffletest/uploads/1/thumb-image.png")
   end
 
   test "deleting when there's a skipped version" do
-    DummyDefinition.store(@img)
-    assert :ok = DummyDefinition.delete(@img)
+    DummyStorage.store(@img)
+    assert :ok = DummyStorage.delete(@img)
   end
 
   test "get, delete with :asset_host set" do
     with_env(:waffle, :asset_host, @custom_asset_host, fn ->
       assert {:ok, "original-image.png"} ==
                Local.put(
-                 DummyDefinition,
+                 DummyStorage,
                  :original,
                  {Combo.Storage.File.new(
                     %{filename: "original-image.png", path: @img},
-                    DummyDefinition
+                    DummyStorage
                   ), nil}
                )
 
       assert {:ok, "1/thumb-image.png"} ==
                Local.put(
-                 DummyDefinition,
+                 DummyStorage,
                  :thumb,
                  {Combo.Storage.File.new(
                     %{filename: "1/thumb-image.png", path: @img},
-                    DummyDefinition
+                    DummyStorage
                   ), nil}
                )
 
@@ -115,13 +115,13 @@ defmodule WaffleTest.Storage.Local do
       assert File.exists?("waffletest/uploads/1/thumb-image.png")
 
       assert @custom_asset_host <> "/waffletest/uploads/original-image.png" ==
-               DummyDefinition.url("image.png", :original)
+               DummyStorage.url("image.png", :original)
 
       assert @custom_asset_host <> "/waffletest/uploads/1/thumb-image.png" ==
-               DummyDefinition.url("1/image.png", :thumb)
+               DummyStorage.url("1/image.png", :thumb)
 
-      :ok = Local.delete(DummyDefinition, :original, {%{file_name: "image.png"}, nil})
-      :ok = Local.delete(DummyDefinition, :thumb, {%{file_name: "image.png"}, nil})
+      :ok = Local.delete(DummyStorage, :original, {%{file_name: "image.png"}, nil})
+      :ok = Local.delete(DummyStorage, :thumb, {%{file_name: "image.png"}, nil})
       refute File.exists?("waffletest/uploads/original-image.png")
       refute File.exists?("waffletest/uploads/1/thumb-image.png")
     end)
@@ -129,9 +129,9 @@ defmodule WaffleTest.Storage.Local do
 
   test "save binary" do
     Local.put(
-      DummyDefinition,
+      DummyStorage,
       :original,
-      {Combo.Storage.File.new(%{binary: "binary", filename: "binary.png"}, DummyDefinition), nil}
+      {Combo.Storage.File.new(%{binary: "binary", filename: "binary.png"}, DummyStorage), nil}
     )
 
     assert true == File.exists?("waffletest/uploads/binary.png")
@@ -139,8 +139,8 @@ defmodule WaffleTest.Storage.Local do
 
   test "encoded url" do
     url =
-      DummyDefinition.url(
-        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyDefinition),
+      DummyStorage.url(
+        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyStorage),
         :original
       )
 
@@ -149,8 +149,8 @@ defmodule WaffleTest.Storage.Local do
 
   test "url for skipped version" do
     url =
-      DummyDefinition.url(
-        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyDefinition),
+      DummyStorage.url(
+        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyStorage),
         :skipped
       )
 
@@ -161,7 +161,7 @@ defmodule WaffleTest.Storage.Local do
     filepath = @badimg
     [filename] = String.split(@img, "/") |> Enum.reverse() |> Enum.take(1)
     assert File.exists?(filepath)
-    DummyDefinition.store(filepath)
+    DummyStorage.store(filepath)
 
     assert !File.exists?("waffletest/uploads/original-#{filename}")
     assert !File.exists?("waffletest/uploads/1/thumb-#{filename}")
@@ -169,20 +169,20 @@ defmodule WaffleTest.Storage.Local do
 
   test "temp files from processing are cleaned up" do
     filepath = @img
-    DummyDefinition.store(filepath)
+    DummyStorage.store(filepath)
     assert Enum.empty?(File.ls!("waffletest/tmp"))
   end
 
   test "temp files from handling binary data are cleaned up" do
     filepath = @img
     filename = "image.png"
-    DummyDefinition.store(%{binary: File.read!(filepath), filename: filename})
+    DummyStorage.store(%{binary: File.read!(filepath), filename: filename})
     assert File.exists?("waffletest/uploads/original-#{filename}")
     assert Enum.empty?(File.ls!("waffletest/tmp"))
   end
 
   test "temp files from handling remote URLs are cleaned up" do
-    DummyDefinition.store("https://www.google.com/favicon.ico")
+    DummyStorage.store("https://www.google.com/favicon.ico")
     assert Enum.empty?(File.ls!("waffletest/tmp"))
   end
 end

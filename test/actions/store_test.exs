@@ -6,7 +6,7 @@ defmodule WaffleTest.Actions.Store do
 
   import Mock
 
-  defmodule DummyDefinition do
+  defmodule DummyStorage do
     use Waffle.Actions.Store
     use Waffle.Definition.Storage
 
@@ -18,7 +18,7 @@ defmodule WaffleTest.Actions.Store do
     def __versions, do: [:original, :thumb, :skipped]
   end
 
-  defmodule DummyDefinitionWithExtension do
+  defmodule DummyStorageWithExtension do
     use Waffle.Actions.Store
     use Waffle.Definition.Storage
 
@@ -37,7 +37,7 @@ defmodule WaffleTest.Actions.Store do
     def __versions, do: [:convert_to_jpg, :custom_to_jpg]
   end
 
-  defmodule DummyDefinitionWithHeaders do
+  defmodule DummyStorageWithHeaders do
     use Waffle.Actions.Store
     use Waffle.Definition.Storage
 
@@ -46,7 +46,7 @@ defmodule WaffleTest.Actions.Store do
     def remote_file_headers(%URI{host: "www.google.com"}), do: [{"User-Agent", "MyApp"}]
   end
 
-  defmodule DummyDefinitionWithValidationError do
+  defmodule DummyStorageWithValidationError do
     use Waffle.Actions.Store
     use Waffle.Definition.Storage
 
@@ -57,68 +57,68 @@ defmodule WaffleTest.Actions.Store do
 
   test "custom transformations change a file extension" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinitionWithExtension, _, {%{file_name: "image.jpg", path: _}, nil} ->
+      put: fn DummyStorageWithExtension, _, {%{file_name: "image.jpg", path: _}, nil} ->
         {:ok, "resp"}
       end do
-      assert DummyDefinitionWithExtension.store(@img) == {:ok, "image.png"}
+      assert DummyStorageWithExtension.store(@img) == {:ok, "image.png"}
     end
   end
 
   test "checks file existence" do
-    assert DummyDefinition.store("non-existent-file.png") == {:error, :invalid_file_path}
+    assert DummyStorage.store("non-existent-file.png") == {:error, :invalid_file_path}
   end
 
   test "delegates to definition validation" do
-    assert DummyDefinition.store(__ENV__.file) == {:error, :invalid_file}
+    assert DummyStorage.store(__ENV__.file) == {:error, :invalid_file}
   end
 
   test "supports custom validation error message" do
-    assert DummyDefinitionWithValidationError.store(__ENV__.file) == {:error, "invalid file type"}
+    assert DummyStorageWithValidationError.store(__ENV__.file) == {:error, "invalid file type"}
   end
 
   test "single binary argument is interpreted as file path" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "image.png", path: @img}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "image.png", path: @img}, nil} ->
         {:ok, "resp"}
       end do
-      assert DummyDefinition.store(@img) == {:ok, "image.png"}
+      assert DummyStorage.store(@img) == {:ok, "image.png"}
     end
   end
 
   test "two-tuple argument interpreted as path and scope" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope} ->
+      put: fn DummyStorage, _, {%{file_name: "image.png", path: @img}, :scope} ->
         {:ok, "resp"}
       end do
-      assert DummyDefinition.store({@img, :scope}) == {:ok, "image.png"}
+      assert DummyStorage.store({@img, :scope}) == {:ok, "image.png"}
     end
   end
 
   test "map with a filename and path" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "image.png", path: @img}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "image.png", path: @img}, nil} ->
         {:ok, "resp"}
       end do
-      assert DummyDefinition.store(%{filename: "image.png", path: @img}) == {:ok, "image.png"}
+      assert DummyStorage.store(%{filename: "image.png", path: @img}) == {:ok, "image.png"}
     end
   end
 
   test "two-tuple with Plug.Upload and a scope" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope} ->
+      put: fn DummyStorage, _, {%{file_name: "image.png", path: @img}, :scope} ->
         {:ok, "resp"}
       end do
-      assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) ==
+      assert DummyStorage.store({%{filename: "image.png", path: @img}, :scope}) ==
                {:ok, "image.png"}
     end
   end
 
   test "error from ExAws on upload to S3" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope} ->
+      put: fn DummyStorage, _, {%{file_name: "image.png", path: @img}, :scope} ->
         {:error, {:http_error, 404, "XML"}}
       end do
-      assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) ==
+      assert DummyStorage.store({%{filename: "image.png", path: @img}, :scope}) ==
                {:error, [{:http_error, 404, "XML"}, {:http_error, 404, "XML"}]}
     end
   end
@@ -128,10 +128,10 @@ defmodule WaffleTest.Actions.Store do
 
     catch_exit do
       with_mock Combo.Storage.Adapters.S3,
-        put: fn DummyDefinition, _, {%{file_name: "image.png", path: @img}, :scope} ->
+        put: fn DummyStorage, _, {%{file_name: "image.png", path: @img}, :scope} ->
           :timer.sleep(100) && {:ok, "favicon.ico"}
         end do
-        assert DummyDefinition.store({%{filename: "image.png", path: @img}, :scope}) ==
+        assert DummyStorage.store({%{filename: "image.png", path: @img}, :scope}) ==
                  {:ok, "image.png"}
       end
     end
@@ -143,10 +143,10 @@ defmodule WaffleTest.Actions.Store do
     Application.put_env(:waffle, :recv_timeout, 1)
 
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "favicon.ico", path: _}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "favicon.ico", path: _}, nil} ->
         {:ok, "favicon.ico"}
       end do
-      assert DummyDefinition.store("https://www.google.com/favicon.ico") ==
+      assert DummyStorage.store("https://www.google.com/favicon.ico") ==
                {:error, :recv_timeout}
     end
 
@@ -157,10 +157,10 @@ defmodule WaffleTest.Actions.Store do
     Application.put_env(:waffle, :recv_timeout, 1)
 
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
         {:ok, "newfavicon.ico"}
       end do
-      assert DummyDefinition.store(%{
+      assert DummyStorage.store(%{
                remote_path: "https://www.google.com/favicon.ico",
                filename: "newfavicon.ico"
              }) ==
@@ -172,10 +172,10 @@ defmodule WaffleTest.Actions.Store do
 
   test "accepts remote files" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "favicon.ico", path: _}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "favicon.ico", path: _}, nil} ->
         {:ok, "favicon.ico"}
       end do
-      assert DummyDefinition.store("https://www.google.com/favicon.ico") == {:ok, "favicon.ico"}
+      assert DummyStorage.store("https://www.google.com/favicon.ico") == {:ok, "favicon.ico"}
     end
   end
 
@@ -191,12 +191,12 @@ defmodule WaffleTest.Actions.Store do
       {
         Combo.Storage.Adapters.S3,
         [],
-        put: fn DummyDefinition, _, {%{file_name: "image three.png", path: _}, nil} ->
+        put: fn DummyStorage, _, {%{file_name: "image three.png", path: _}, nil} ->
           {:ok, "image three.png"}
         end
       }
     ]) do
-      assert DummyDefinition.store(@remote_img_with_space_image_two) ==
+      assert DummyStorage.store(@remote_img_with_space_image_two) ==
                {:ok, "image three.png"}
     end
   end
@@ -211,12 +211,12 @@ defmodule WaffleTest.Actions.Store do
       {
         Combo.Storage.Adapters.S3,
         [],
-        put: fn DummyDefinitionWithHeaders, _, {%{file_name: "favicon.ico", path: _}, nil} ->
+        put: fn DummyStorageWithHeaders, _, {%{file_name: "favicon.ico", path: _}, nil} ->
           {:ok, "favicon.ico"}
         end
       }
     ]) do
-      DummyDefinitionWithHeaders.store("https://www.google.com/favicon.ico")
+      DummyStorageWithHeaders.store("https://www.google.com/favicon.ico")
 
       assert_called(
         :hackney.get("https://www.google.com/favicon.ico", [{"User-Agent", "MyApp"}], "", :_)
@@ -226,19 +226,19 @@ defmodule WaffleTest.Actions.Store do
 
   test "accepts remote files with spaces" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "image two.png", path: _}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "image two.png", path: _}, nil} ->
         {:ok, "image two.png"}
       end do
-      assert DummyDefinition.store(@remote_img_with_space_image_two) == {:ok, "image two.png"}
+      assert DummyStorage.store(@remote_img_with_space_image_two) == {:ok, "image two.png"}
     end
   end
 
   test "accepts remote files with filenames" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
         {:ok, "newfavicon.ico"}
       end do
-      assert DummyDefinition.store(%{
+      assert DummyStorage.store(%{
                remote_path: "https://www.google.com/favicon.ico",
                filename: "newfavicon.ico"
              }) == {:ok, "newfavicon.ico"}
@@ -247,10 +247,10 @@ defmodule WaffleTest.Actions.Store do
 
   test "rejects remote files with filenames and invalid remote path" do
     with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyDefinition, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
+      put: fn DummyStorage, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
         {:ok, "newfavicon.ico"}
       end do
-      assert DummyDefinition.store(%{remote_path: "path/favicon.ico", filename: "newfavicon.ico"}) ==
+      assert DummyStorage.store(%{remote_path: "path/favicon.ico", filename: "newfavicon.ico"}) ==
                {:error, :invalid_file_path}
     end
   end

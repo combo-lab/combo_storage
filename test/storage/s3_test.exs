@@ -5,7 +5,7 @@ defmodule WaffleTest.Storage.S3 do
   @img_with_space "test/support/image two.png"
   @img_with_plus "test/support/image+three.png"
 
-  defmodule DummyDefinition do
+  defmodule DummyStorage do
     use Combo.Storage
 
     @acl :public_read
@@ -66,7 +66,7 @@ defmodule WaffleTest.Storage.S3 do
   defmacro delete_and_assert_not_found(definition, args) do
     quote bind_quoted: [definition: definition, args: args] do
       :ok = definition.delete(args)
-      signed_url = DummyDefinition.url(args, signed: true)
+      signed_url = DummyStorage.url(args, signed: true)
       {:ok, {{_, code, msg}, _, _}} = :httpc.request(to_charlist(signed_url))
 
       # If buckets aren't configured to be public at bucket-level,
@@ -159,12 +159,12 @@ defmodule WaffleTest.Storage.S3 do
   test "virtual_host" do
     with_env(:waffle, :virtual_host, true, fn ->
       assert "https://#{env_bucket()}.s3.amazonaws.com/waffletest/uploads/image.png" ==
-               DummyDefinition.url(@img)
+               DummyStorage.url(@img)
     end)
 
     with_env(:waffle, :virtual_host, false, fn ->
       assert "https://s3.amazonaws.com/#{env_bucket()}/waffletest/uploads/image.png" ==
-               DummyDefinition.url(@img)
+               DummyStorage.url(@img)
     end)
   end
 
@@ -174,17 +174,17 @@ defmodule WaffleTest.Storage.S3 do
     custom_asset_host = "https://some.cloudfront.com"
 
     with_env(:waffle, :asset_host, custom_asset_host, fn ->
-      assert "#{custom_asset_host}/waffletest/uploads/image.png" == DummyDefinition.url(@img)
+      assert "#{custom_asset_host}/waffletest/uploads/image.png" == DummyStorage.url(@img)
     end)
 
     with_env(:waffle, :asset_host, {:system, "WAFFLE_ASSET_HOST"}, fn ->
       System.put_env("WAFFLE_ASSET_HOST", custom_asset_host)
-      assert "#{custom_asset_host}/waffletest/uploads/image.png" == DummyDefinition.url(@img)
+      assert "#{custom_asset_host}/waffletest/uploads/image.png" == DummyStorage.url(@img)
     end)
 
     with_env(:waffle, :asset_host, false, fn ->
       assert "https://#{env_bucket()}.s3.amazonaws.com/waffletest/uploads/image.png" ==
-               DummyDefinition.url(@img)
+               DummyStorage.url(@img)
     end)
   end
 
@@ -199,64 +199,64 @@ defmodule WaffleTest.Storage.S3 do
   @tag :s3
   @tag timeout: 15_000
   test "encoded url" do
-    url = DummyDefinition.url(@img_with_space)
+    url = DummyStorage.url(@img_with_space)
     assert "https://#{env_bucket()}.s3.amazonaws.com/waffletest/uploads/image%20two.png" == url
   end
 
   @tag :s3
   @tag timeout: 15_000
   test "encoded url with S3-specific escaping" do
-    url = DummyDefinition.url(@img_with_plus)
+    url = DummyStorage.url(@img_with_plus)
     assert "https://#{env_bucket()}.s3.amazonaws.com/waffletest/uploads/image%2Bthree.png" == url
   end
 
   @tag :s3
   @tag timeout: 15_000
   test "public put and get" do
-    assert {:ok, "image.png"} == DummyDefinition.store(@img)
-    assert_public(DummyDefinition, "image.png")
-    delete_and_assert_not_found(DummyDefinition, "image.png")
+    assert {:ok, "image.png"} == DummyStorage.store(@img)
+    assert_public(DummyStorage, "image.png")
+    delete_and_assert_not_found(DummyStorage, "image.png")
   end
 
   @tag :s3
   @tag timeout: 15_000
   test "public put stream" do
     img_map = %{filename: "image.png", stream: File.stream!(@img)}
-    assert {:ok, "image.png"} == DummyDefinition.store(img_map)
-    assert_public(DummyDefinition, "image.png")
-    delete_and_assert_not_found(DummyDefinition, "image.png")
+    assert {:ok, "image.png"} == DummyStorage.store(img_map)
+    assert_public(DummyStorage, "image.png")
+    delete_and_assert_not_found(DummyStorage, "image.png")
   end
 
   @tag :s3
   @tag timeout: 15_000
   test "private put and signed get" do
     # put the image as private
-    assert {:ok, "image.png"} == DummyDefinition.store({@img, :private})
-    assert_private(DummyDefinition, "image.png")
-    delete_and_assert_not_found(DummyDefinition, "image.png")
+    assert {:ok, "image.png"} == DummyStorage.store({@img, :private})
+    assert_private(DummyStorage, "image.png")
+    delete_and_assert_not_found(DummyStorage, "image.png")
   end
 
   @tag :s3
   @tag timeout: 15_000
   test "content_type" do
-    {:ok, "image.png"} = DummyDefinition.store({@img, :with_content_type})
-    assert_header(DummyDefinition, "image.png", "content-type", "image/gif")
-    delete_and_assert_not_found(DummyDefinition, "image.png")
+    {:ok, "image.png"} = DummyStorage.store({@img, :with_content_type})
+    assert_header(DummyStorage, "image.png", "content-type", "image/gif")
+    delete_and_assert_not_found(DummyStorage, "image.png")
   end
 
   @tag :s3
   @tag timeout: 15_000
   test "content_disposition" do
-    {:ok, "image.png"} = DummyDefinition.store({@img, :with_content_disposition})
+    {:ok, "image.png"} = DummyStorage.store({@img, :with_content_disposition})
 
     assert_header(
-      DummyDefinition,
+      DummyStorage,
       "image.png",
       "content-disposition",
       "attachment; filename=abc.png"
     )
 
-    delete_and_assert_not_found(DummyDefinition, "image.png")
+    delete_and_assert_not_found(DummyStorage, "image.png")
   end
 
   @tag :s3
@@ -299,7 +299,7 @@ defmodule WaffleTest.Storage.S3 do
   @tag timeout: 150_000
   test "put with error" do
     Application.put_env(:waffle, :bucket, "unknown-bucket")
-    {:error, res} = DummyDefinition.store("test/support/image.png")
+    {:error, res} = DummyStorage.store("test/support/image.png")
     Application.put_env(:waffle, :bucket, env_bucket())
     assert res
   end
