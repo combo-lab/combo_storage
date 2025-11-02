@@ -30,19 +30,6 @@ defmodule Waffle.Actions.Url do
       Avatar.urls({"selfie.png", user})
       #=> %{original: "https://.../original.png", thumb: "https://.../thumb.png"}
 
-  **Default url**
-
-  In cases where a placeholder image is desired when an uploaded file
-  is not present, Waffle allows the definition of a default image to
-  be returned gracefully when requested with a `nil` file.
-
-      def default_url(version) do
-        MyApp.Endpoint.url <> "/images/placeholders/profile_image.png"
-      end
-
-      Avatar.url(nil) #=> "http://example.com/images/placeholders/profile_image.png"
-      Avatar.url({nil, scope}) #=> "http://example.com/images/placeholders/profile_image.png"
-
   **Virtual Host**
 
   To support AWS regions other than US Standard, it may be required to
@@ -116,10 +103,6 @@ defmodule Waffle.Actions.Url do
   #
   # Private
   #
-
-  defp build(definition, version, {nil, scope}, _options) do
-    definition.default_url(version, scope)
-  end
 
   defp build(definition, version, file_and_scope, options) do
     case Versioning.resolve_file_name(definition, version, file_and_scope) do

@@ -16,9 +16,6 @@ defmodule Waffle.Actions.Store do
       # Store any locally accessible file
       Avatar.store("/path/to/my/file.png") #=> {:ok, "file.png"}
 
-      # Store any remotely accessible file
-      Avatar.store("http://example.com/file.png") #=> {:ok, "file.png"}
-
       # Store a file directly from a `%Plug.Upload{}`
       Avatar.store(%Plug.Upload{filename: "file.png", path: "/a/b/c"}) #=> {:ok, "file.png"}
 

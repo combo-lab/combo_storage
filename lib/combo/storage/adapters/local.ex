@@ -31,10 +31,10 @@ defmodule Combo.Storage.Adapters.Local do
   alias Waffle.Definition.Versioning
 
   @impl true
-  def put(definition, version, {file, scope}) do
+  def put(definition, variant, {file, scope}) do
     dest_path =
       Path.join([
-        definition.storage_dir(version, {file, scope}),
+        definition.storage_dir(variant, {file, scope}),
         file.file_name
       ])
 
@@ -50,11 +50,11 @@ defmodule Combo.Storage.Adapters.Local do
   end
 
   @impl true
-  def url(definition, version, file_and_scope, _options \\ []) do
+  def url(definition, variant, file_and_scope, _options \\ []) do
     local_path =
       Path.join([
-        definition.storage_dir(version, file_and_scope),
-        Versioning.resolve_file_name(definition, version, file_and_scope)
+        definition.storage_dir(variant, file_and_scope),
+        Versioning.resolve_file_name(definition, variant, file_and_scope)
       ])
 
     host = host(definition)
@@ -68,10 +68,10 @@ defmodule Combo.Storage.Adapters.Local do
   end
 
   @impl true
-  def delete(definition, version, file_and_scope) do
+  def delete(definition, variant, file_and_scope) do
     Path.join([
-      definition.storage_dir(version, file_and_scope),
-      Versioning.resolve_file_name(definition, version, file_and_scope)
+      definition.storage_dir(variant, file_and_scope),
+      Versioning.resolve_file_name(definition, variant, file_and_scope)
     ])
     |> File.rm()
   end
