@@ -6,14 +6,9 @@ defmodule Waffle.Actions.Store do
   accepts either:
 
     * A path to a local file
-
-    * A path to a remote `http` or `https` file
-
     * A map with a filename and path keys (eg, a `%Plug.Upload{}`)
-
     * A map with a filename and binary keys (eg, `%{filename: "image.png", binary: <<255,255,255,...>>}`)
     * A map with a filename and stream keys (eg, `%{filename: "image.png", stream: %Stream{...}}`)
-
     * A two-element tuple consisting of one of the above file formats as well as a scope map
 
   Example usage as general file store:

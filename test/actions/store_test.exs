@@ -2,7 +2,6 @@ defmodule WaffleTest.Actions.Store do
   use ExUnit.Case, async: false
 
   @img "test/support/image.png"
-  @remote_img_with_space_image_two "https://github.com/elixir-waffle/waffle/blob/master/test/support/image%20two.png"
 
   import Mock
 
@@ -137,121 +136,5 @@ defmodule WaffleTest.Actions.Store do
     end
 
     Application.put_env(:waffle, :version_timeout, 15_000)
-  end
-
-  test "recv_timeout" do
-    Application.put_env(:waffle, :recv_timeout, 1)
-
-    with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyStorage, _, {%{file_name: "favicon.ico", path: _}, nil} ->
-        {:ok, "favicon.ico"}
-      end do
-      assert DummyStorage.store("https://www.google.com/favicon.ico") ==
-               {:error, :recv_timeout}
-    end
-
-    Application.put_env(:waffle, :recv_timeout, 5_000)
-  end
-
-  test "recv_timeout with a filename" do
-    Application.put_env(:waffle, :recv_timeout, 1)
-
-    with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyStorage, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
-        {:ok, "newfavicon.ico"}
-      end do
-      assert DummyStorage.store(%{
-               remote_path: "https://www.google.com/favicon.ico",
-               filename: "newfavicon.ico"
-             }) ==
-               {:error, :recv_timeout}
-    end
-
-    Application.put_env(:waffle, :recv_timeout, 5_000)
-  end
-
-  test "accepts remote files" do
-    with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyStorage, _, {%{file_name: "favicon.ico", path: _}, nil} ->
-        {:ok, "favicon.ico"}
-      end do
-      assert DummyStorage.store("https://www.google.com/favicon.ico") == {:ok, "favicon.ico"}
-    end
-  end
-
-  test "sets remote filename from content-disposition header when available" do
-    with_mocks([
-      {
-        :hackney_headers,
-        [:passthrough],
-        get_value: fn "content-disposition", _headers ->
-          "attachment; filename=\"image three.png\""
-        end
-      },
-      {
-        Combo.Storage.Adapters.S3,
-        [],
-        put: fn DummyStorage, _, {%{file_name: "image three.png", path: _}, nil} ->
-          {:ok, "image three.png"}
-        end
-      }
-    ]) do
-      assert DummyStorage.store(@remote_img_with_space_image_two) ==
-               {:ok, "image three.png"}
-    end
-  end
-
-  test "sets HTTP headers for request to remote file" do
-    with_mocks([
-      {
-        :hackney,
-        [:passthrough],
-        []
-      },
-      {
-        Combo.Storage.Adapters.S3,
-        [],
-        put: fn DummyStorageWithHeaders, _, {%{file_name: "favicon.ico", path: _}, nil} ->
-          {:ok, "favicon.ico"}
-        end
-      }
-    ]) do
-      DummyStorageWithHeaders.store("https://www.google.com/favicon.ico")
-
-      assert_called(
-        :hackney.get("https://www.google.com/favicon.ico", [{"User-Agent", "MyApp"}], "", :_)
-      )
-    end
-  end
-
-  test "accepts remote files with spaces" do
-    with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyStorage, _, {%{file_name: "image two.png", path: _}, nil} ->
-        {:ok, "image two.png"}
-      end do
-      assert DummyStorage.store(@remote_img_with_space_image_two) == {:ok, "image two.png"}
-    end
-  end
-
-  test "accepts remote files with filenames" do
-    with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyStorage, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
-        {:ok, "newfavicon.ico"}
-      end do
-      assert DummyStorage.store(%{
-               remote_path: "https://www.google.com/favicon.ico",
-               filename: "newfavicon.ico"
-             }) == {:ok, "newfavicon.ico"}
-    end
-  end
-
-  test "rejects remote files with filenames and invalid remote path" do
-    with_mock Combo.Storage.Adapters.S3,
-      put: fn DummyStorage, _, {%{file_name: "newfavicon.ico", path: _}, nil} ->
-        {:ok, "newfavicon.ico"}
-      end do
-      assert DummyStorage.store(%{remote_path: "path/favicon.ico", filename: "newfavicon.ico"}) ==
-               {:error, :invalid_file_path}
-    end
   end
 end
