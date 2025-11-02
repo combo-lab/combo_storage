@@ -1,14 +1,17 @@
-After installing Waffle, another two things should be done:
+# Quick Start
 
-1. setup a storage provider
-2. define a definition module
+## Overview
+
+1. install `combo_storage`.
+2. setup a storage provider.
+3. define a definition module.
 
 ### Setup a storage provider
 
-Waffle has two built-in storage providers:
+`combo_storage` has two built-in storage providers:
 
-- `Waffle.Storage.Local`
-- `Waffle.Storage.S3`
+- `Combo.Storage.Local`
+- `Combo.Storage.S3`
 
 [Other available storage providers](#other-storage-providers)
 are supported by the community.
@@ -72,20 +75,6 @@ dependency. Benefits include:
 - Changeset integration
 - Versioned urls for cache busting (`.../thumb.png?v=63601457477`)
 
-## Other Storage Providers
-
-- **Rackspace** - [arc_rackspace](https://github.com/lokalebasen/arc_rackspace)
-
-- **Manta** - [arc_manta](https://github.com/onyxrev/arc_manta)
-
-- **OVH** - [arc_ovh](https://github.com/stephenmoloney/arc_ovh)
-
-- **Google Cloud Storage** - [waffle_gcs](https://github.com/elixir-waffle/waffle_gcs)
-
-- **Microsoft Azure Storage** - [arc_azure](https://github.com/phil-a/arc_azure)
-
-- **Aliyun OSS Storage** - [waffle_aliyun_oss](https://github.com/ug0/waffle_aliyun_oss)
-
 ## Testing
 
 The basic test suite can be run with without supplying any S3 information:
@@ -107,9 +96,3 @@ The following environment variables will be used by the test suite:
 - WAFFLE_TEST_REGION
 
 After setting these variables, you can run the full test suite with `mix test --include s3:true`.
-
-## Attribution
-
-Great thanks to Sean Stavropoulos (@stavro) for the original awesome work on the library.
-
-This project is forked from [Arc](https://github.com/stavro/arc) from the version `v0.11.0`.
