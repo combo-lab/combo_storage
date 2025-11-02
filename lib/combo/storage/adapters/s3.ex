@@ -130,7 +130,7 @@ defmodule Combo.Storage.Adapters.S3 do
   """
   require Logger
 
-  @behaviour Combo.Storage.Adapter
+  use Combo.Storage.Adapter
 
   alias ExAws.Config
   alias ExAws.Request.Url

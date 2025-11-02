@@ -19,8 +19,8 @@ defmodule Combo.Storage do
 
   defmacro __using__(_options) do
     quote do
-      use Waffle.Definition.Versioning
       use Waffle.Definition.Storage
+      use Waffle.Definition.Versioning
 
       use Waffle.Actions.Store
       use Waffle.Actions.Delete

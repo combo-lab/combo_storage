@@ -22,7 +22,7 @@ defmodule Combo.Storage.Adapters.Local do
       end
   """
 
-  @behaviour Combo.Storage.Adapter
+  use Combo.Storage.Adapter
 
   alias Waffle.Definition.Versioning
 
