@@ -58,8 +58,6 @@ defmodule Waffle.Mixfile do
 
   defp deps do
     [
-      {:hackney, "~> 1.9"},
-
       # If using Amazon S3
       {:ex_aws, "~> 2.1", optional: true},
       {:ex_aws_s3, "~> 2.1", optional: true},
@@ -72,6 +70,7 @@ defmodule Waffle.Mixfile do
       {:ex_doc, "~> 0.21", only: :dev},
 
       # Dev, Test
+      {:hackney, "~> 1.9", only: [:dev, :test]},
       {:credo, "~> 1.4", only: [:dev, :test], runtime: false}
     ]
   end

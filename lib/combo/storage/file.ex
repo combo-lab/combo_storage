@@ -2,17 +2,16 @@ defmodule Combo.Storage.File do
   @moduledoc false
 
   # TODO: rename :file_name to :filename
-  defstruct [:path, :file_name, :binary, :is_tempfile?, :stream]
-
-  def generate_temporary_path(item \\ nil) do
-    do_generate_temporary_path(item)
-  end
+  defstruct [:path, :file_name, :binary, :stream, :is_tempfile?]
 
   ## Handle a binary blob
 
   def new(%{filename: filename, binary: binary}, _definition) do
-    %Combo.Storage.File{binary: binary, file_name: Path.basename(filename)}
-    |> write_binary()
+    ext = Path.extname(filename)
+    tmp_path = build_tmp_path(ext)
+    file_name = Path.basename(filename)
+    File.write!(tmp_path, binary)
+    %Combo.Storage.File{path: tmp_path, file_name: file_name, is_tempfile?: true}
   end
 
   ## Handle a local file
@@ -39,47 +38,28 @@ defmodule Combo.Storage.File do
     %Combo.Storage.File{stream: stream, file_name: Path.basename(filename)}
   end
 
-  defp write_binary(file) do
-    path = generate_temporary_path(file)
-    File.write!(path, file.binary)
+  ## Utils
 
-    %__MODULE__{
-      file_name: file.file_name,
-      path: path,
-      is_tempfile?: true
-    }
+  def build_tmp_path(%Combo.Storage.File{} = file) do
+    ext = Path.extname(file.path)
+    build_tmp_path(ext)
   end
 
-  #
-  # Temp file with exact extension.
-  # Used for converting formats when passing extension in transformations
-  #
+  def build_tmp_path(ext) when is_atom(ext) or is_binary(ext) do
+    ext =
+      ext
+      |> to_string()
+      |> add_dot_to_ext()
 
-  defp do_generate_temporary_path(%Combo.Storage.File{path: path}) do
-    Path.extname(path || "")
-    |> do_generate_temporary_path()
-  end
-
-  defp do_generate_temporary_path(extension) do
-    ext = extension |> to_string()
-
-    string_extension =
-      cond do
-        String.starts_with?(ext, ".") ->
-          ext
-
-        ext == "" ->
-          ""
-
-        true ->
-          ".#{ext}"
-      end
-
-    file_name =
+    name =
       :crypto.strong_rand_bytes(20)
       |> Base.encode32()
-      |> Kernel.<>(string_extension)
+      |> Kernel.<>(ext)
 
-    Path.join(System.tmp_dir(), file_name)
+    Path.join(System.tmp_dir(), name)
   end
+
+  defp add_dot_to_ext("." <> _ = ext), do: ext
+  defp add_dot_to_ext(""), do: ""
+  defp add_dot_to_ext(ext), do: ".#{ext}"
 end

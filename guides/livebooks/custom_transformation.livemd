@@ -62,7 +62,7 @@ To generate a temporary path for the new file version
 <!-- livebook:{"force_markdown":true} -->
 
 ```elixir
-tmp_path = Combo.Storage.File.generate_temporary_path(file)
+tmp_path = Combo.Storage.File.build_tmp_path(file)
 ```
 
 or if the new version is going to have a new extension
@@ -70,7 +70,7 @@ or if the new version is going to have a new extension
 <!-- livebook:{"force_markdown":true} -->
 
 ```elixir
-tmp_path = Combo.Storage.File.generate_temporary_path("png")
+tmp_path = Combo.Storage.File.build_tmp_path("png")
 ```
 
 then, you can process your file and put the result into tmp_path.
@@ -89,7 +89,7 @@ You can combine it all together to use `ExOptimizer` library
 
 ```elixir
 def process(_version, original_file) do
-  tmp_path = Combo.Storage.File.generate_temporary_path(original_file)
+  tmp_path = Combo.Storage.File.build_tmp_path(original_file)
 
   File.cp!(original_file.path, tmp_path)
 

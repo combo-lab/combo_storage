@@ -4,8 +4,8 @@ defmodule Waffle.Transformations.Convert do
   def apply(cmd, file, args, extension \\ nil) do
     new_path =
       if extension,
-        do: Combo.Storage.File.generate_temporary_path(extension),
-        else: Combo.Storage.File.generate_temporary_path(file)
+        do: Combo.Storage.File.build_tmp_path(extension),
+        else: Combo.Storage.File.build_tmp_path(file)
 
     args =
       if is_function(args),
