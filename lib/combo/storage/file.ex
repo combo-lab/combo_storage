@@ -4,20 +4,10 @@ defmodule Combo.Storage.File do
   # TODO: rename :file_name to :filename
   defstruct [:path, :file_name, :binary, :stream, :is_tempfile?]
 
-  ## Handle a binary blob
-
-  def new(%{filename: filename, binary: binary}, _definition) do
-    ext = Path.extname(filename)
-    tmp_path = build_tmp_path(ext)
-    file_name = Path.basename(filename)
-    File.write!(tmp_path, binary)
-    %Combo.Storage.File{path: tmp_path, file_name: file_name, is_tempfile?: true}
-  end
-
   ## Handle a local file
 
   # Accepts a path
-  def new(path, _definition) when is_binary(path) do
+  def new(path) when is_binary(path) do
     case File.exists?(path) do
       true -> %Combo.Storage.File{path: path, file_name: Path.basename(path)}
       false -> {:error, :invalid_file_path}
@@ -25,20 +15,30 @@ defmodule Combo.Storage.File do
   end
 
   # Accepts a map conforming to %Plug.Upload{} syntax
-  def new(%{filename: filename, path: path}, _definition) do
+  def new(%{filename: filename, path: path}) do
     case File.exists?(path) do
       true -> %Combo.Storage.File{path: path, file_name: filename}
       false -> {:error, :invalid_file_path}
     end
   end
 
+  ## Handle a binary blob
+
+  def new(%{filename: filename, binary: binary}) do
+    ext = Path.extname(filename)
+    tmp_path = build_tmp_path(ext)
+    file_name = Path.basename(filename)
+    File.write!(tmp_path, binary)
+    %Combo.Storage.File{path: tmp_path, file_name: file_name, is_tempfile?: true}
+  end
+
   ## Handle a stream
 
-  def new(%{filename: filename, stream: stream}, _definition) when is_struct(stream) do
+  def new(%{filename: filename, stream: stream}) when is_struct(stream) do
     %Combo.Storage.File{stream: stream, file_name: Path.basename(filename)}
   end
 
-  ## Utils
+  ## Helpers
 
   def build_tmp_path(%Combo.Storage.File{} = file) do
     ext = Path.extname(file.path)

@@ -57,20 +57,14 @@ defmodule WaffleTest.Storage.Local do
              Local.put(
                DummyStorage,
                :original,
-               {Combo.Storage.File.new(
-                  %{filename: "original-image.png", path: @img},
-                  DummyStorage
-                ), nil}
+               {Combo.Storage.File.new(%{filename: "original-image.png", path: @img}), nil}
              )
 
     assert {:ok, "1/thumb-image.png"} ==
              Local.put(
                DummyStorage,
                :thumb,
-               {Combo.Storage.File.new(
-                  %{filename: "1/thumb-image.png", path: @img},
-                  DummyStorage
-                ), nil}
+               {Combo.Storage.File.new(%{filename: "1/thumb-image.png", path: @img}), nil}
              )
 
     assert File.exists?("waffletest/uploads/original-image.png")
@@ -95,20 +89,14 @@ defmodule WaffleTest.Storage.Local do
                Local.put(
                  DummyStorage,
                  :original,
-                 {Combo.Storage.File.new(
-                    %{filename: "original-image.png", path: @img},
-                    DummyStorage
-                  ), nil}
+                 {Combo.Storage.File.new(%{filename: "original-image.png", path: @img}), nil}
                )
 
       assert {:ok, "1/thumb-image.png"} ==
                Local.put(
                  DummyStorage,
                  :thumb,
-                 {Combo.Storage.File.new(
-                    %{filename: "1/thumb-image.png", path: @img},
-                    DummyStorage
-                  ), nil}
+                 {Combo.Storage.File.new(%{filename: "1/thumb-image.png", path: @img}), nil}
                )
 
       assert File.exists?("waffletest/uploads/original-image.png")
@@ -131,7 +119,7 @@ defmodule WaffleTest.Storage.Local do
     Local.put(
       DummyStorage,
       :original,
-      {Combo.Storage.File.new(%{binary: "binary", filename: "binary.png"}, DummyStorage), nil}
+      {Combo.Storage.File.new(%{binary: "binary", filename: "binary.png"}), nil}
     )
 
     assert true == File.exists?("waffletest/uploads/binary.png")
@@ -140,7 +128,7 @@ defmodule WaffleTest.Storage.Local do
   test "encoded url" do
     url =
       DummyStorage.url(
-        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyStorage),
+        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}),
         :original
       )
 
@@ -150,7 +138,7 @@ defmodule WaffleTest.Storage.Local do
   test "url for skipped version" do
     url =
       DummyStorage.url(
-        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyStorage),
+        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}),
         :skipped
       )
 

@@ -48,7 +48,7 @@ defmodule Waffle.Actions.Store do
 
   def store(definition, {file, scope})
       when is_binary(file) or is_map(file) do
-    put(definition, {Combo.Storage.File.new(file, definition), scope})
+    put(definition, {Combo.Storage.File.new(file), scope})
   end
 
   def store(definition, filepath)
