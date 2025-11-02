@@ -53,7 +53,6 @@ defmodule Waffle.Definition.Storage do
   Waffle currently supports:
 
     * `Combo.Storage.Adapters.Local`
-    * `Combo.Storage.Adapters.S3`
 
   Override the `__storage` function in your definition module if you
   want to use a different type of storage for a particular uploader.

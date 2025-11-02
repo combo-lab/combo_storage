@@ -1,6 +1,5 @@
 defmodule WaffleTest.Actions.Url do
   use ExUnit.Case, async: false
-  import Mock
 
   defmodule DummyStorage do
     use Waffle.Actions.Url
@@ -22,44 +21,5 @@ defmodule WaffleTest.Actions.Url do
 
   test "handles skipped versions" do
     assert DummyStorage.url("file.png", :skipped) == nil
-  end
-
-  test_with_mock "delegates url generation to the storage engine", Combo.Storage.Adapters.S3,
-    url: fn DummyStorage, :original, {%{file_name: "file.png"}, nil}, [] -> :ok end do
-    assert DummyStorage.url("file.png") == :ok
-  end
-
-  test_with_mock "optional atom as a second argument specifies the version",
-                 Combo.Storage.Adapters.S3,
-                 url: fn DummyStorage, :thumb, {%{file_name: "file.png"}, nil}, [] -> :ok end do
-    assert DummyStorage.url("file.png", :thumb) == :ok
-  end
-
-  test_with_mock "optional list as a second argument specifies the options",
-                 Combo.Storage.Adapters.S3,
-                 url: fn DummyStorage,
-                         :original,
-                         {%{file_name: "file.png"}, nil},
-                         [signed: true, expires_in: 10] ->
-                   :ok
-                 end do
-    assert DummyStorage.url("file.png", signed: true, expires_in: 10) == :ok
-  end
-
-  test_with_mock "optional tuple for file including scope", Combo.Storage.Adapters.S3,
-    url: fn DummyStorage, :original, {%{file_name: "file.png"}, :scope}, [] -> :ok end do
-    assert DummyStorage.url({"file.png", :scope}) == :ok
-  end
-
-  test_with_mock "optional tuple for file including scope 2", Combo.Storage.Adapters.S3,
-    url: fn
-      DummyStorage, :original, {%{file_name: "file.png"}, :scope}, [signed: true] -> :ok
-      DummyStorage, :thumb, {%{file_name: "file.png"}, :scope}, [signed: true] -> :ok
-    end do
-    assert DummyStorage.urls({"file.png", :scope}, signed: true) == %{
-             original: :ok,
-             thumb: :ok,
-             skipped: nil
-           }
   end
 end

@@ -32,12 +32,6 @@ defmodule Combo.Storage.File do
     %Combo.Storage.File{path: tmp_path, file_name: file_name, is_tempfile?: true}
   end
 
-  ## Handle a stream
-
-  def new(%{filename: filename, stream: stream}) when is_struct(stream) do
-    %Combo.Storage.File{stream: stream, file_name: Path.basename(filename)}
-  end
-
   ## Helpers
 
   def build_tmp_path(%Combo.Storage.File{} = file) do
