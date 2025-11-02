@@ -30,36 +30,6 @@ defmodule Waffle.Actions.Url do
       Avatar.urls({"selfie.png", user})
       #=> %{original: "https://.../original.png", thumb: "https://.../thumb.png"}
 
-  **Virtual Host**
-
-  To support AWS regions other than US Standard, it may be required to
-  generate urls in the
-  [`virtual_host`](http://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
-  style.  This will generate urls in the style:
-  `https://#{bucket}.s3.amazonaws.com` instead of
-  `https://s3.amazonaws.com/#{bucket}`.
-
-  To use this style of url generation, your bucket name must be DNS
-  compliant.
-
-  This can be enabled with:
-
-      config :waffle,
-        virtual_host: true
-
-  > When using virtual hosted–style buckets with SSL, the SSL wild card certificate only matches buckets that do not contain periods. To work around this, use HTTP or write your own certificate verification logic.
-
-  **Asset Host**
-
-  You may optionally specify an asset host rather than using the
-  default `bucket.s3.amazonaws.com` format.
-
-  In your application configuration, you'll need to provide an `asset_host` value:
-
-      config :waffle,
-        asset_host: "https://d3gav2egqolk5.cloudfront.net", # For a value known during compilation
-        asset_host: {:system, "ASSET_HOST"} # For a value not known until runtime
-
   """
 
   alias Waffle.Actions.Url
