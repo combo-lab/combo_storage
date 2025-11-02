@@ -52,8 +52,8 @@ defmodule Waffle.Definition.Storage do
 
   Waffle currently supports:
 
-    * `Waffle.Storage.Local`
-    * `Waffle.Storage.S3`
+    * `Combo.Storage.Adapters.Local`
+    * `Combo.Storage.Adapters.S3`
 
   Override the `__storage` function in your definition module if you
   want to use a different type of storage for a particular uploader.
@@ -122,7 +122,7 @@ defmodule Waffle.Definition.Storage do
       def validate(_), do: true
       def default_url(version, _), do: default_url(version)
       def default_url(_), do: nil
-      def __storage, do: Application.get_env(:waffle, :storage, Waffle.Storage.S3)
+      def __storage, do: Application.get_env(:waffle, :storage, Combo.Storage.Adapters.S3)
 
       defoverridable storage_dir_prefix: 0,
                      storage_dir: 2,

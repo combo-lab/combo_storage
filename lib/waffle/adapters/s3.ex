@@ -1,9 +1,9 @@
-defmodule Waffle.Storage.S3 do
+defmodule Combo.Storage.Adapters.S3 do
   @moduledoc ~S"""
   The module to facilitate integration with S3 through ExAws.S3
 
       config :waffle,
-        storage: Waffle.Storage.S3,
+        storage: Combo.Storage.Adapters.S3,
         bucket: {:system, "AWS_S3_BUCKET"}
 
   Along with any configuration necessary for ExAws.
@@ -130,7 +130,7 @@ defmodule Waffle.Storage.S3 do
   """
   require Logger
 
-  @behaviour Waffle.StorageBehavior
+  @behaviour Combo.Storage.Adapter
 
   alias ExAws.Config
   alias ExAws.Request.Url

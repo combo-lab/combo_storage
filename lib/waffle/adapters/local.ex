@@ -1,11 +1,11 @@
-defmodule Waffle.Storage.Local do
+defmodule Combo.Storage.Adapters.Local do
   @moduledoc ~S"""
   Local storage provides facility to store files locally.
 
   ## Local configuration
 
       config :waffle,
-        storage: Waffle.Storage.Local,
+        storage: Combo.Storage.Adapters.Local,
         # in order to have a different storage directory from url
         storage_dir_prefix: "priv/waffle/private",
         # add custom host to url
@@ -22,7 +22,7 @@ defmodule Waffle.Storage.Local do
       end
   """
 
-  @behaviour Waffle.StorageBehavior
+  @behaviour Combo.Storage.Adapter
 
   alias Waffle.Definition.Versioning
 

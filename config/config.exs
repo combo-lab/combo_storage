@@ -1,7 +1,7 @@
 import Config
 
 config :waffle,
-  storage: Waffle.Storage.S3
+  storage: Combo.Storage.Adapters.S3
 
 config :ex_aws,
   json_codec: Jason

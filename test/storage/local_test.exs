@@ -1,7 +1,7 @@
 defmodule WaffleTest.Storage.Local do
   use ExUnit.Case
 
-  alias Waffle.Storage.Local
+  alias Combo.Storage.Adapters.Local
 
   @img "test/support/image.png"
   @badimg "test/support/invalid_image.png"
