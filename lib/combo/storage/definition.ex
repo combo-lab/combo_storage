@@ -1,6 +1,6 @@
 defmodule Waffle.Definition do
   @moduledoc ~S"""
-  Defines uploader to manage files.
+  Defines the storage module to manage files.
 
       defmodule Avatar do
         use Waffle.Definition
@@ -10,13 +10,9 @@ defmodule Waffle.Definition do
   managing process.
 
     * `Waffle.Definition.Versioning`
-
     * `Waffle.Definition.Storage`
-
     * `Waffle.Actions.Store`
-
     * `Waffle.Actions.Delete`
-
     * `Waffle.Actions.Url`
 
   """
