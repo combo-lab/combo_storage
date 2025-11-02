@@ -17,14 +17,39 @@ defmodule Combo.Storage do
 
   """
 
-  defmacro __using__(_options) do
-    quote do
+  defmacro __using__(opts) do
+    quote bind_quoted: [opts: opts] do
       use Waffle.Definition.Storage
       use Waffle.Definition.Versioning
 
       use Waffle.Actions.Store
       use Waffle.Actions.Delete
       use Waffle.Actions.Url
+
+      @storage_config opts
+
+      @before_compile {Combo.Storage, :__inject_default_callbacks__}
+    end
+  end
+
+  @type message :: binary()
+  @type file_and_scope :: {Combo.Storage.File.t(), any()}
+  @type variant :: atom()
+  @type path :: binary()
+
+  @callback validate(file_and_scope()) ::
+              :ok | {:error, message()}
+  @callback transform(file_and_scope(), variant()) ::
+              {:ok, Combo.Storage.File.t()} | {:error, message()}
+  @callback path(file_and_scope(), variant()) :: path()
+
+  defmacro __inject_default_callbacks__(_env) do
+    quote do
+      def validate(_), do: :ok
+      def transform({file, _}, _), do: {:ok, file}
+
+      defoverridable validate: 1,
+                     transform: 2
     end
   end
 end

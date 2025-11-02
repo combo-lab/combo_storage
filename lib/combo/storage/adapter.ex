@@ -20,6 +20,9 @@ defmodule Combo.Storage.Adapter do
     end
   end
 
+  # shared config
+  # :async
+
   @doc """
   Saves a file and returns the file name or an error.
   """

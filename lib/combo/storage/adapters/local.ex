@@ -23,12 +23,6 @@ defmodule Combo.Storage.Adapters.Local do
   > In production, you might want to store files in a persistent location,
   > such as `/media`.
 
-  ## Local configuration
-
-      config :waffle,
-        # add custom host to url
-        asset_host: "https://example.com"
-
   """
 
   use Combo.Storage.Adapter,
@@ -38,18 +32,18 @@ defmodule Combo.Storage.Adapters.Local do
 
   @impl true
   def put(definition, version, {file, scope}) do
-    destination_path =
+    dest_path =
       Path.join([
         definition.storage_dir(version, {file, scope}),
         file.file_name
       ])
 
-    destination_path |> Path.dirname() |> File.mkdir_p!()
+    dest_path |> Path.dirname() |> File.mkdir_p!()
 
     if binary = file.binary do
-      File.write!(destination_path, binary)
+      File.write!(dest_path, binary)
     else
-      File.copy!(file.path, destination_path)
+      File.copy!(file.path, dest_path)
     end
 
     {:ok, file.file_name}

@@ -1,6 +1,7 @@
 defmodule Combo.Storage.File do
   @moduledoc false
 
+  # TODO: rename :file_name to :filename
   defstruct [:path, :file_name, :binary, :is_tempfile?, :stream]
 
   def generate_temporary_path(item \\ nil) do
