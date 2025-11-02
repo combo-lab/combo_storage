@@ -86,14 +86,14 @@ defmodule Waffle.Actions.Store do
       definition.__versions()
       |> Enum.map(fn r -> async_process_version(definition, r, {file, scope}) end)
       |> Enum.map(fn task -> Task.await(task, version_timeout()) end)
-      |> ensure_all_success
+      |> ensure_all_success()
       |> Enum.map(fn {v, r} -> async_put_version(definition, v, {r, scope}) end)
       |> Enum.map(fn task -> Task.await(task, version_timeout()) end)
       |> handle_responses(file.file_name)
     else
       definition.__versions()
       |> Enum.map(fn version -> process_version(definition, version, {file, scope}) end)
-      |> ensure_all_success
+      |> ensure_all_success()
       |> Enum.map(fn {version, result} -> put_version(definition, version, {result, scope}) end)
       |> handle_responses(file.file_name)
     end

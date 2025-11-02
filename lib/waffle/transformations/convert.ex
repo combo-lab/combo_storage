@@ -31,7 +31,7 @@ defmodule Waffle.Transformations.Convert do
   defp args_list(args), do: ~w(#{args})
 
   defp ensure_executable_exists!(program) do
-    unless System.find_executable(program) do
+    if !System.find_executable(program) do
       raise Waffle.MissingExecutableError, message: program
     end
   end
