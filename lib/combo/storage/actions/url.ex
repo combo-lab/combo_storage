@@ -70,10 +70,6 @@ defmodule Waffle.Actions.Url do
     build(definition, version, {file, scope}, options)
   end
 
-  #
-  # Private
-  #
-
   defp build(definition, version, file_and_scope, options) do
     case Versioning.resolve_file_name(definition, version, file_and_scope) do
       nil ->

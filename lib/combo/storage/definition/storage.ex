@@ -114,14 +114,12 @@ defmodule Waffle.Definition.Storage do
 
       def __storage, do: Application.get_env(:waffle, :storage, Combo.Storage.Adapters.S3)
 
-      def asset_host, do: Application.get_env(:waffle, :asset_host)
       def filename(_, {file, _}), do: Path.basename(file.file_name, Path.extname(file.file_name))
       def storage_dir(_, _), do: Application.get_env(:waffle, :storage_dir, "uploads")
 
       defoverridable storage_dir: 2,
                      filename: 2,
-                     __storage: 0,
-                     asset_host: 0
+                     __storage: 0
 
       @before_compile Waffle.Definition.Storage
     end

@@ -4,8 +4,7 @@ Setup the storage provider:
 
 ```elixir
 config :waffle,
-  storage: Combo.Storage.Adapters.Local,
-  asset_host: "http://static.example.com" # or {:system, "ASSET_HOST"}
+  storage: Combo.Storage.Adapters.Local
 ```
 
 Define a definition module:

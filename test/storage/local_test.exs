@@ -5,7 +5,6 @@ defmodule WaffleTest.Storage.Local do
 
   @img "test/support/image.png"
   @badimg "test/support/invalid_image.png"
-  @custom_asset_host "http://static.example.com"
 
   setup do
     File.mkdir_p("waffletest/uploads")
@@ -81,38 +80,6 @@ defmodule WaffleTest.Storage.Local do
   test "deleting when there's a skipped version" do
     DummyStorage.store(@img)
     assert :ok = DummyStorage.delete(@img)
-  end
-
-  test "get, delete with :asset_host set" do
-    with_env(:waffle, :asset_host, @custom_asset_host, fn ->
-      assert {:ok, "original-image.png"} ==
-               Local.put(
-                 DummyStorage,
-                 :original,
-                 {Combo.Storage.File.new(%{filename: "original-image.png", path: @img}), nil}
-               )
-
-      assert {:ok, "1/thumb-image.png"} ==
-               Local.put(
-                 DummyStorage,
-                 :thumb,
-                 {Combo.Storage.File.new(%{filename: "1/thumb-image.png", path: @img}), nil}
-               )
-
-      assert File.exists?("waffletest/uploads/original-image.png")
-      assert File.exists?("waffletest/uploads/1/thumb-image.png")
-
-      assert @custom_asset_host <> "/waffletest/uploads/original-image.png" ==
-               DummyStorage.url("image.png", :original)
-
-      assert @custom_asset_host <> "/waffletest/uploads/1/thumb-image.png" ==
-               DummyStorage.url("1/image.png", :thumb)
-
-      :ok = Local.delete(DummyStorage, :original, {%{file_name: "image.png"}, nil})
-      :ok = Local.delete(DummyStorage, :thumb, {%{file_name: "image.png"}, nil})
-      refute File.exists?("waffletest/uploads/original-image.png")
-      refute File.exists?("waffletest/uploads/1/thumb-image.png")
-    end)
   end
 
   test "save binary" do

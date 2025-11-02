@@ -41,12 +41,13 @@ defmodule Combo.Storage do
               :ok | {:error, message()}
   @callback transform(file_and_scope(), variant()) ::
               {:ok, Combo.Storage.File.t()} | {:error, message()}
-  @callback path(file_and_scope(), variant()) :: path()
+  @callback build_path(file_and_scope(), variant()) :: path()
 
   defmacro __inject_default_callbacks__(_env) do
     quote do
       def validate(_), do: :ok
       def transform({file, _}, _), do: {:ok, file}
+      def build_path({file, _}, _), do: Path.basename(file.file_name)
 
       defoverridable validate: 1,
                      transform: 2

@@ -20,20 +20,7 @@ An example for setting up `Combo.Storage.Adapters.Local`:
 
 ```elixir
 config :waffle,
-  storage: Combo.Storage.Adapters.Local,
-  asset_host: "http://static.example.com"
-```
-
-An example for setting up `Combo.Storage.Adapters.S3`:
-
-```elixir
-config :waffle,
-  storage: Combo.Storage.Adapters.S3,
-  bucket: "example_bucket",
-  asset_host: "http://static.example.com"
-
-config :ex_aws,
-  json_codec: Jason
+  storage: Combo.Storage.Adapters.Local
 ```
 
 ### Define a definition module

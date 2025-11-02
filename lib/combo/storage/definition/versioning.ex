@@ -53,7 +53,6 @@ defmodule Waffle.Definition.Versioning do
 
   defmacro __before_compile__(_env) do
     quote do
-      def transform(_, _), do: :noaction
       def __versions, do: @versions
     end
   end

@@ -57,14 +57,7 @@ defmodule Combo.Storage.Adapters.Local do
         Versioning.resolve_file_name(definition, variant, file_and_scope)
       ])
 
-    host = host(definition)
-
-    if host == nil do
-      Path.join("/", local_path)
-    else
-      Path.join([host, local_path])
-    end
-    |> URI.encode()
+    URI.encode(Path.join("/", local_path))
   end
 
   @impl true
@@ -74,12 +67,5 @@ defmodule Combo.Storage.Adapters.Local do
       Versioning.resolve_file_name(definition, variant, file_and_scope)
     ])
     |> File.rm()
-  end
-
-  defp host(definition) do
-    case definition.asset_host() do
-      {:system, env_var} when is_binary(env_var) -> System.get_env(env_var)
-      url -> url
-    end
   end
 end
