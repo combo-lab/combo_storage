@@ -26,10 +26,6 @@ defmodule Waffle.Actions.Url do
       Avatar.url({"selfie.png", user}, :thumb, signed: true)
       #=> "https://bucket.s3.amazonaws.com/uploads/1/thumb.png?AWSAccessKeyId=AKAAIPDF14AAX7XQ&Signature=5PzIbSgD1V2vPLj%2B4WLRSFQ5M%3D&Expires=1434395458"
 
-      # To generate urls for all versions:
-      Avatar.urls({"selfie.png", user})
-      #=> %{original: "https://.../original.png", thumb: "https://.../thumb.png"}
-
   """
 
   alias Waffle.Actions.Url
@@ -37,12 +33,6 @@ defmodule Waffle.Actions.Url do
 
   defmacro __using__(_) do
     quote do
-      def urls(file, options \\ []) do
-        Enum.into(__MODULE__.__versions(), %{}, fn r ->
-          {r, __MODULE__.url(file, r, options)}
-        end)
-      end
-
       def url(file), do: url(file, nil)
       def url(file, options) when is_list(options), do: url(file, nil, options)
       def url(file, version), do: url(file, version, [])
