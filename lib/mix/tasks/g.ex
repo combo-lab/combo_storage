@@ -72,7 +72,7 @@ defmodule Mix.Tasks.Waffle do
 
     embed_template(:uploader, """
     defmodule <%= inspect @uploader_model_name %> do
-      use Waffle.Definition
+      use Combo.Storage
 
       # Include ecto support (requires package waffle_ecto installed):
       # use Waffle.Ecto.Definition

@@ -16,25 +16,24 @@
 [Other available storage providers](#other-storage-providers)
 are supported by the community.
 
-An example for setting up `Waffle.Storage.Local`:
+An example for setting up `Combo.Storage.Adapters.Local`:
 
 ```elixir
 config :waffle,
-  storage: Waffle.Storage.Local,
-  asset_host: "http://static.example.com" # or {:system, "ASSET_HOST"}
+  storage: Combo.Storage.Adapters.Local,
+  asset_host: "http://static.example.com"
 ```
 
-An example for setting up `Waffle.Storage.S3`:
+An example for setting up `Combo.Storage.Adapters.S3`:
 
 ```elixir
 config :waffle,
-  storage: Waffle.Storage.S3,
-  bucket: "custom_bucket",                # or {:system, "AWS_S3_BUCKET"}
-  asset_host: "http://static.example.com" # or {:system, "ASSET_HOST"}
+  storage: Combo.Storage.Adapters.S3,
+  bucket: "example_bucket",
+  asset_host: "http://static.example.com"
 
 config :ex_aws,
   json_codec: Jason
-  # any configurations provided by https://github.com/ex-aws/ex_aws
 ```
 
 ### Define a definition module

@@ -1,16 +1,24 @@
-# An Example for Local
+# An example of `Combo.Storage.Local`
 
 Setup the storage provider:
+
 ```elixir
 config :waffle,
-  storage: Waffle.Storage.Local,
+  storage: Combo.Storage.Adapters.Local,
   asset_host: "http://static.example.com" # or {:system, "ASSET_HOST"}
 ```
 
 Define a definition module:
+
 ```elixir
 defmodule Avatar do
-  use Waffle.Definition
+  # new API
+  use Combo.Storage,
+    adapter: Combo.Storage.Adapters.Local
+
+  # old API
+
+  use Combo.Storage
 
   @versions [:original, :thumb]
   @extensions ~w(.jpg .jpeg .gif .png)
@@ -39,6 +47,7 @@ end
 ```
 
 Store or Get files:
+
 ```elixir
 # Given some current_user record
 current_user = %{id: 1}

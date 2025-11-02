@@ -187,7 +187,7 @@ defmodule Combo.Storage.Adapters.S3 do
   defp ensure_keyword_list(map) when is_map(map), do: Map.to_list(map)
 
   # If the file is stored as a binary in-memory, send to AWS in a single request
-  defp do_put(file = %Waffle.File{binary: file_binary}, {s3_bucket, s3_key, s3_options})
+  defp do_put(file = %Combo.Storage.File{binary: file_binary}, {s3_bucket, s3_key, s3_options})
        when is_binary(file_binary) do
     S3.put_object(s3_bucket, s3_key, file_binary, s3_options)
     |> ExAws.request()
@@ -198,7 +198,7 @@ defmodule Combo.Storage.Adapters.S3 do
   end
 
   # If the file is a stream, send it to AWS as a multi-part upload
-  defp do_put(file = %Waffle.File{stream: file_stream}, {s3_bucket, s3_key, s3_options})
+  defp do_put(file = %Combo.Storage.File{stream: file_stream}, {s3_bucket, s3_key, s3_options})
        when is_struct(file_stream) do
     file_stream
     |> chunk_stream()

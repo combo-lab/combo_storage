@@ -1,4 +1,4 @@
-defmodule Waffle.File do
+defmodule Combo.Storage.File do
   @moduledoc false
 
   defstruct [:path, :file_name, :binary, :is_tempfile?, :stream]
@@ -19,14 +19,14 @@ defmodule Waffle.File do
 
     case save_file(uri, filename, definition) do
       {:ok, local_path, filename_from_content_disposition} ->
-        %Waffle.File{
+        %Combo.Storage.File{
           path: local_path,
           file_name: filename_from_content_disposition,
           is_tempfile?: true
         }
 
       {:ok, local_path} ->
-        %Waffle.File{path: local_path, file_name: filename, is_tempfile?: true}
+        %Combo.Storage.File{path: local_path, file_name: filename, is_tempfile?: true}
 
       {:error, _reason} = err ->
         err
@@ -45,7 +45,7 @@ defmodule Waffle.File do
 
     case save_file(uri, filename, definition) do
       {:ok, local_path} ->
-        %Waffle.File{path: local_path, file_name: filename, is_tempfile?: true}
+        %Combo.Storage.File{path: local_path, file_name: filename, is_tempfile?: true}
 
       {:error, _reason} = err ->
         err
@@ -68,7 +68,7 @@ defmodule Waffle.File do
   #
 
   def new(%{filename: filename, binary: binary}, _definition) do
-    %Waffle.File{binary: binary, file_name: Path.basename(filename)}
+    %Combo.Storage.File{binary: binary, file_name: Path.basename(filename)}
     |> write_binary()
   end
 
@@ -79,7 +79,7 @@ defmodule Waffle.File do
   # Accepts a path
   def new(path, _definition) when is_binary(path) do
     case File.exists?(path) do
-      true -> %Waffle.File{path: path, file_name: Path.basename(path)}
+      true -> %Combo.Storage.File{path: path, file_name: Path.basename(path)}
       false -> {:error, :invalid_file_path}
     end
   end
@@ -87,7 +87,7 @@ defmodule Waffle.File do
   # Accepts a map conforming to %Plug.Upload{} syntax
   def new(%{filename: filename, path: path}, _definition) do
     case File.exists?(path) do
-      true -> %Waffle.File{path: path, file_name: filename}
+      true -> %Combo.Storage.File{path: path, file_name: filename}
       false -> {:error, :invalid_file_path}
     end
   end
@@ -96,7 +96,7 @@ defmodule Waffle.File do
   # Handle a stream
   #
   def new(%{filename: filename, stream: stream}, _definition) when is_struct(stream) do
-    %Waffle.File{stream: stream, file_name: Path.basename(filename)}
+    %Combo.Storage.File{stream: stream, file_name: Path.basename(filename)}
   end
 
   #
@@ -109,7 +109,7 @@ defmodule Waffle.File do
   # Used for converting formats when passing extension in transformations
   #
 
-  defp do_generate_temporary_path(%Waffle.File{path: path}) do
+  defp do_generate_temporary_path(%Combo.Storage.File{path: path}) do
     Path.extname(path || "")
     |> do_generate_temporary_path()
   end

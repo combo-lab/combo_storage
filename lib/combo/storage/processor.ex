@@ -62,7 +62,7 @@ defmodule Waffle.Processor do
   coordinates):
 
       defmodule Avatar do
-        use Waffle.Definition
+        use Combo.Storage
 
         @versions [:original, :thumb]
 
@@ -153,10 +153,10 @@ defmodule Waffle.Processor do
   end
 
   @spec apply_transformation(
-          Waffle.File.t(),
-          (Waffle.File.t() -> {:ok, Waffle.File.t()} | {:error, String.t()}),
+          Combo.Storage.File.t(),
+          (Combo.Storage.File.t() -> {:ok, Combo.Storage.File.t()} | {:error, String.t()}),
           atom()
-        ) :: {:ok, Waffle.File.t()} | {:error, String.t()}
+        ) :: {:ok, Combo.Storage.File.t()} | {:error, String.t()}
 
   defp apply_transformation(_, :skip, _), do: {:ok, nil}
   defp apply_transformation(file, :noaction, _), do: {:ok, file}

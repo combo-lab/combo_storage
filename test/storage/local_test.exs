@@ -31,7 +31,7 @@ defmodule WaffleTest.Storage.Local do
   end
 
   defmodule DummyDefinition do
-    use Waffle.Definition
+    use Combo.Storage
 
     @versions [:original, :thumb, :skipped]
 
@@ -53,7 +53,7 @@ defmodule WaffleTest.Storage.Local do
   end
 
   defmodule DummyDefinitionWithPrefix do
-    use Waffle.Definition
+    use Combo.Storage
 
     @versions [:original, :thumb]
 
@@ -75,7 +75,7 @@ defmodule WaffleTest.Storage.Local do
              Local.put(
                DummyDefinition,
                :original,
-               {Waffle.File.new(%{filename: "original-image.png", path: @img}, DummyDefinition),
+               {Combo.Storage.File.new(%{filename: "original-image.png", path: @img}, DummyDefinition),
                 nil}
              )
 
@@ -83,7 +83,7 @@ defmodule WaffleTest.Storage.Local do
              Local.put(
                DummyDefinition,
                :thumb,
-               {Waffle.File.new(%{filename: "1/thumb-image.png", path: @img}, DummyDefinition),
+               {Combo.Storage.File.new(%{filename: "1/thumb-image.png", path: @img}, DummyDefinition),
                 nil}
              )
 
@@ -103,7 +103,7 @@ defmodule WaffleTest.Storage.Local do
              Local.put(
                DummyDefinitionWithPrefix,
                :original,
-               {Waffle.File.new(
+               {Combo.Storage.File.new(
                   %{filename: "original-image.png", path: @img},
                   DummyDefinitionWithPrefix
                 ), nil}
@@ -113,7 +113,7 @@ defmodule WaffleTest.Storage.Local do
              Local.put(
                DummyDefinitionWithPrefix,
                :thumb,
-               {Waffle.File.new(
+               {Combo.Storage.File.new(
                   %{filename: "1/thumb-image.png", path: @img},
                   DummyDefinitionWithPrefix
                 ), nil}
@@ -139,7 +139,7 @@ defmodule WaffleTest.Storage.Local do
                Local.put(
                  DummyDefinition,
                  :original,
-                 {Waffle.File.new(%{filename: "original-image.png", path: @img}, DummyDefinition),
+                 {Combo.Storage.File.new(%{filename: "original-image.png", path: @img}, DummyDefinition),
                   nil}
                )
 
@@ -147,7 +147,7 @@ defmodule WaffleTest.Storage.Local do
                Local.put(
                  DummyDefinition,
                  :thumb,
-                 {Waffle.File.new(%{filename: "1/thumb-image.png", path: @img}, DummyDefinition),
+                 {Combo.Storage.File.new(%{filename: "1/thumb-image.png", path: @img}, DummyDefinition),
                   nil}
                )
 
@@ -171,7 +171,7 @@ defmodule WaffleTest.Storage.Local do
     Local.put(
       DummyDefinition,
       :original,
-      {Waffle.File.new(%{binary: "binary", filename: "binary.png"}, DummyDefinition), nil}
+      {Combo.Storage.File.new(%{binary: "binary", filename: "binary.png"}, DummyDefinition), nil}
     )
 
     assert true == File.exists?("waffletest/uploads/binary.png")
@@ -180,7 +180,7 @@ defmodule WaffleTest.Storage.Local do
   test "encoded url" do
     url =
       DummyDefinition.url(
-        Waffle.File.new(%{binary: "binary", filename: "binary file.png"}, DummyDefinition),
+        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyDefinition),
         :original
       )
 
@@ -190,7 +190,7 @@ defmodule WaffleTest.Storage.Local do
   test "url for skipped version" do
     url =
       DummyDefinition.url(
-        Waffle.File.new(%{binary: "binary", filename: "binary file.png"}, DummyDefinition),
+        Combo.Storage.File.new(%{binary: "binary", filename: "binary file.png"}, DummyDefinition),
         :skipped
       )
 

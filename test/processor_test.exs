@@ -62,7 +62,7 @@ defmodule WaffleTest.Processor do
   end
 
   defmodule MissingExecutableDefinition do
-    use Waffle.Definition
+    use Combo.Storage
 
     def transform(:original, _), do: {:blah, ""}
   end
@@ -72,7 +72,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :original,
-        {Waffle.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyDefinition), nil}
       )
 
     assert file.path == @img
@@ -83,7 +83,7 @@ defmodule WaffleTest.Processor do
              Waffle.Processor.process(
                DummyDefinition,
                :skipped,
-               {Waffle.File.new(@img, DummyDefinition), nil}
+               {Combo.Storage.File.new(@img, DummyDefinition), nil}
              )
   end
 
@@ -92,7 +92,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :thumb,
-        {Waffle.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyDefinition), nil}
       )
 
     assert new_file.path != @img
@@ -107,7 +107,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :med,
-        {Waffle.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyDefinition), nil}
       )
 
     assert new_file.path != @img
@@ -124,7 +124,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :small,
-        {Waffle.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyDefinition), nil}
       )
 
     assert new_file.path != @img
@@ -139,7 +139,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :custom,
-        {Waffle.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyDefinition), nil}
       )
 
     assert new_file.path != @img
@@ -154,7 +154,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :custom_with_ext,
-        {Waffle.File.new(@img, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img, DummyDefinition), nil}
       )
 
     assert new_file.path != @img
@@ -172,7 +172,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :small,
-        {Waffle.File.new(%{binary: img_binary, filename: "image.png"}, DummyDefinition), nil}
+        {Combo.Storage.File.new(%{binary: img_binary, filename: "image.png"}, DummyDefinition), nil}
       )
 
     assert new_file.path != @img
@@ -189,7 +189,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         DummyDefinition,
         :thumb,
-        {Waffle.File.new(@img2, DummyDefinition), nil}
+        {Combo.Storage.File.new(@img2, DummyDefinition), nil}
       )
 
     assert new_file.path != @img2
@@ -204,7 +204,7 @@ defmodule WaffleTest.Processor do
              Waffle.Processor.process(
                BrokenDefinition,
                :thumb,
-               {Waffle.File.new(@img, BrokenDefinition), nil}
+               {Combo.Storage.File.new(@img, BrokenDefinition), nil}
              )
   end
 
@@ -213,7 +213,7 @@ defmodule WaffleTest.Processor do
       Waffle.Processor.process(
         MissingExecutableDefinition,
         :original,
-        {Waffle.File.new(@img, MissingExecutableDefinition), nil}
+        {Combo.Storage.File.new(@img, MissingExecutableDefinition), nil}
       )
     end
   end

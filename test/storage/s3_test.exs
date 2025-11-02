@@ -6,7 +6,7 @@ defmodule WaffleTest.Storage.S3 do
   @img_with_plus "test/support/image+three.png"
 
   defmodule DummyDefinition do
-    use Waffle.Definition
+    use Combo.Storage
 
     @acl :public_read
     def storage_dir(_, _), do: "waffletest/uploads"
@@ -19,7 +19,7 @@ defmodule WaffleTest.Storage.S3 do
   end
 
   defmodule DefinitionWithThumbnail do
-    use Waffle.Definition
+    use Combo.Storage
     @versions [:thumb]
     @acl :public_read
 
@@ -29,7 +29,7 @@ defmodule WaffleTest.Storage.S3 do
   end
 
   defmodule DefinitionWithSkipped do
-    use Waffle.Definition
+    use Combo.Storage
     @versions [:skipped]
     @acl :public_read
 
@@ -37,25 +37,25 @@ defmodule WaffleTest.Storage.S3 do
   end
 
   defmodule DefinitionWithScope do
-    use Waffle.Definition
+    use Combo.Storage
     @acl :public_read
     def storage_dir(_, {_, scope}), do: "uploads/with_scopes/#{scope.id}"
   end
 
   defmodule DefinitionWithBucket do
-    use Waffle.Definition
+    use Combo.Storage
     def bucket, do: System.get_env("WAFFLE_TEST_BUCKET")
   end
 
   defmodule DefinitionWithBucketInScope do
-    use Waffle.Definition
+    use Combo.Storage
     @acl :public_read
     def bucket({_, scope}), do: scope[:bucket] || bucket()
     def bucket, do: System.get_env("WAFFLE_TEST_BUCKET")
   end
 
   defmodule DefinitionWithAssetHost do
-    use Waffle.Definition
+    use Combo.Storage
     def asset_host, do: "https://example.com"
   end
 

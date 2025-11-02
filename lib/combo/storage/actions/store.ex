@@ -53,7 +53,7 @@ defmodule Waffle.Actions.Store do
 
   def store(definition, {file, scope})
       when is_binary(file) or is_map(file) do
-    put(definition, {Waffle.File.new(file, definition), scope})
+    put(definition, {Combo.Storage.File.new(file, definition), scope})
   end
 
   def store(definition, filepath)
@@ -67,7 +67,7 @@ defmodule Waffle.Actions.Store do
 
   defp put(_definition, {error = {:error, _msg}, _scope}), do: error
 
-  defp put(definition, {%Waffle.File{} = file, scope}) do
+  defp put(definition, {%Combo.Storage.File{} = file, scope}) do
     case definition.validate({file, scope}) do
       result when result == true or result == :ok ->
         put_versions(definition, {file, scope})

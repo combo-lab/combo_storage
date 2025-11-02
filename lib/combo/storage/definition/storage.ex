@@ -2,7 +2,7 @@ defmodule Waffle.Definition.Storage do
   @moduledoc ~S"""
   Uploader configuration.
 
-  Add `use Waffle.Definition` inside your module to use it as uploader.
+  Add `use Combo.Storage` inside your module to use it as uploader.
 
   ## Storage directory
 
@@ -69,7 +69,7 @@ defmodule Waffle.Definition.Storage do
   uploaded file conforms to popular image formats, you can use:
 
       defmodule Avatar do
-        use Waffle.Definition
+        use Combo.Storage
         @extension_whitelist ~w(.jpg .jpeg .gif .png)
 
         def validate({file, _}) do
@@ -94,7 +94,7 @@ defmodule Waffle.Definition.Storage do
   function in your definition module. For example:
 
       defmodule Avatar do
-        use Waffle.Definition
+        use Combo.Storage
 
         def remote_file_headers(%URI{host: "elixir-lang.org"}) do
           credentials = Application.get_env(:my_app, :avatar_credentials)
