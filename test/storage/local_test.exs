@@ -52,39 +52,25 @@ defmodule WaffleTest.Storage.Local do
       do: "1/skipped-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
   end
 
-  defmodule DummyDefinitionWithPrefix do
-    use Combo.Storage
-
-    @versions [:original, :thumb]
-
-    def transform(:thumb, _), do: {:convert, "-strip -thumbnail 10x10"}
-
-    def storage_dir_prefix, do: "priv/waffle/private"
-    def storage_dir(_, _), do: "waffletest/uploads"
-    def __storage, do: Local
-
-    def filename(:original, {file, _}),
-      do: "original-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
-
-    def filename(:thumb, {file, _}),
-      do: "1/thumb-#{Path.basename(file.file_name, Path.extname(file.file_name))}"
-  end
-
   test "put, delete, get" do
     assert {:ok, "original-image.png"} ==
              Local.put(
                DummyDefinition,
                :original,
-               {Combo.Storage.File.new(%{filename: "original-image.png", path: @img}, DummyDefinition),
-                nil}
+               {Combo.Storage.File.new(
+                  %{filename: "original-image.png", path: @img},
+                  DummyDefinition
+                ), nil}
              )
 
     assert {:ok, "1/thumb-image.png"} ==
              Local.put(
                DummyDefinition,
                :thumb,
-               {Combo.Storage.File.new(%{filename: "1/thumb-image.png", path: @img}, DummyDefinition),
-                nil}
+               {Combo.Storage.File.new(
+                  %{filename: "1/thumb-image.png", path: @img},
+                  DummyDefinition
+                ), nil}
              )
 
     assert File.exists?("waffletest/uploads/original-image.png")
@@ -98,36 +84,6 @@ defmodule WaffleTest.Storage.Local do
     refute File.exists?("waffletest/uploads/1/thumb-image.png")
   end
 
-  test "put, delete, get with storage prefix" do
-    assert {:ok, "original-image.png"} ==
-             Local.put(
-               DummyDefinitionWithPrefix,
-               :original,
-               {Combo.Storage.File.new(
-                  %{filename: "original-image.png", path: @img},
-                  DummyDefinitionWithPrefix
-                ), nil}
-             )
-
-    assert {:ok, "1/thumb-image.png"} ==
-             Local.put(
-               DummyDefinitionWithPrefix,
-               :thumb,
-               {Combo.Storage.File.new(
-                  %{filename: "1/thumb-image.png", path: @img},
-                  DummyDefinitionWithPrefix
-                ), nil}
-             )
-
-    assert File.exists?("priv/waffle/private/waffletest/uploads/original-image.png")
-    assert File.exists?("priv/waffle/private/waffletest/uploads/1/thumb-image.png")
-
-    :ok = Local.delete(DummyDefinitionWithPrefix, :original, {%{file_name: "image.png"}, nil})
-    :ok = Local.delete(DummyDefinitionWithPrefix, :thumb, {%{file_name: "image.png"}, nil})
-    refute File.exists?("priv/waffle/private/waffletest/uploads/original-image.png")
-    refute File.exists?("priv/waffle/private/waffletest/uploads/1/thumb-image.png")
-  end
-
   test "deleting when there's a skipped version" do
     DummyDefinition.store(@img)
     assert :ok = DummyDefinition.delete(@img)
@@ -139,16 +95,20 @@ defmodule WaffleTest.Storage.Local do
                Local.put(
                  DummyDefinition,
                  :original,
-                 {Combo.Storage.File.new(%{filename: "original-image.png", path: @img}, DummyDefinition),
-                  nil}
+                 {Combo.Storage.File.new(
+                    %{filename: "original-image.png", path: @img},
+                    DummyDefinition
+                  ), nil}
                )
 
       assert {:ok, "1/thumb-image.png"} ==
                Local.put(
                  DummyDefinition,
                  :thumb,
-                 {Combo.Storage.File.new(%{filename: "1/thumb-image.png", path: @img}, DummyDefinition),
-                  nil}
+                 {Combo.Storage.File.new(
+                    %{filename: "1/thumb-image.png", path: @img},
+                    DummyDefinition
+                  ), nil}
                )
 
       assert File.exists?("waffletest/uploads/original-image.png")

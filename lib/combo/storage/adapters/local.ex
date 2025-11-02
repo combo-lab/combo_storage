@@ -2,27 +2,37 @@ defmodule Combo.Storage.Adapters.Local do
   @moduledoc ~S"""
   Local storage provides facility to store files locally.
 
+  ## Usage
+
+      defmodule MyApp.Core.UserAvatar do
+        use Combo.Storage,
+          adapter: Combo.Storage.Adapters.Local,
+          root: Application.app_dir(:my_app, "priv/uploads")
+      end
+
+  If you want to serve the files from a Combo application, configure the
+  endpoint to match the `:root` option above:
+
+      defmodule MyApp.Web.Endpoint do
+        plug Plug.Static,
+          at: "/uploads",
+          from: {:my_app, "priv/uploads"}
+          gzip: false
+      end
+
+  > In production, you might want to store files in a persistent location,
+  > such as `/media`.
+
   ## Local configuration
 
       config :waffle,
-        storage: Combo.Storage.Adapters.Local,
-        # in order to have a different storage directory from url
-        storage_dir_prefix: "priv/waffle/private",
         # add custom host to url
         asset_host: "https://example.com"
 
-  If you want to handle your attachments by phoenix application,
-  configure the endpoint to serve it.
-
-      defmodule AppWeb.Endpoint do
-        plug Plug.Static,
-          at: "/uploads",
-          from: Path.expand("./priv/waffle/public/uploads"),
-          gzip: false
-      end
   """
 
-  use Combo.Storage.Adapter
+  use Combo.Storage.Adapter,
+    requried_config: [:root]
 
   alias Waffle.Definition.Versioning
 
@@ -30,7 +40,6 @@ defmodule Combo.Storage.Adapters.Local do
   def put(definition, version, {file, scope}) do
     destination_path =
       Path.join([
-        definition.storage_dir_prefix(),
         definition.storage_dir(version, {file, scope}),
         file.file_name
       ])
@@ -67,7 +76,6 @@ defmodule Combo.Storage.Adapters.Local do
   @impl true
   def delete(definition, version, file_and_scope) do
     Path.join([
-      definition.storage_dir_prefix(),
       definition.storage_dir(version, file_and_scope),
       Versioning.resolve_file_name(definition, version, file_and_scope)
     ])
